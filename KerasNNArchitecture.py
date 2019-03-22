@@ -2,11 +2,7 @@ import tensorflow as tf
 
 '''
 To DO - 
-Convert into python class with structure
-__init__ :
-    load data from constructor
-    setup vars from constructor
-
+implement methods
 save()
 plot()    
 '''
@@ -42,7 +38,7 @@ class NeuralNetwork(object):
         # input layer
         model.add(tf.keras.layers.Flatten())
 
-        # 3 hidden layers with relu activation
+        # hidden layers with relu activation
         for i in range(self.num_hidden_layers):
             model.add(tf.keras.layers.Dense(self.hidden_units, activation=self.hidden_act_type))
 
