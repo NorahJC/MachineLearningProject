@@ -2,7 +2,11 @@ import tensorflow as tf
 
 '''
 To DO - 
-implement methods
+Convert into python class with structure
+__init__ :
+    load data from constructor
+    setup vars from constructor
+
 save()
 plot()    
 '''
@@ -36,16 +40,17 @@ class NeuralNetwork(object):
         model = tf.keras.models.Sequential()
 
         # input layer
-        model.add(tf.keras.layers.Flatten())
+        model.add(tf.keras.layers.Dense(32, input_shape=(21,)))
 
-        # hidden layers with relu activation
+        # 3 hidden layers with relu activation
         for i in range(self.num_hidden_layers):
             model.add(tf.keras.layers.Dense(self.hidden_units, activation=self.hidden_act_type))
 
         # output layer (To DO - Change this to something better)
-        model.add(tf.keras.layers.Dense(2, activation=tf.nn.softmax))
+        model.add(tf.keras.layers.Dense(4, activation=tf.nn.elu))
 
         '''
+        https://keras.io/activations/
         https://keras.io/optimizers/    --documentation on supported optimizers  
         https://keras.io/losses/        --documentation on supported loss functions
         Make optimizer and loss function changeable
@@ -54,8 +59,8 @@ class NeuralNetwork(object):
                       loss=self.model_loss,
                       metrics=['accuracy']
                       )
-        model.fit(self.x_test,self.y_test, epochs=self.num_epochs)
+        model.fit(self.x_test, self.y_test, epochs=self.num_epochs)
 
         loss, acc = model.evaluate(self.x_train, self.y_train)
         print('test set loss: {} \ntest set accuracy {}'.format(loss, acc))
-        return loss, acc
+        return loss, acc, model
