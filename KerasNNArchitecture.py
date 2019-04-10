@@ -44,14 +44,15 @@ class NeuralNetwork(object):
         model = tf.keras.models.Sequential()
 
         # input layer
-        model.add(tf.keras.layers.Dense(32, input_shape=(19,)))
+        model.add(tf.keras.layers.Dense(units=32, input_shape=(19,)))
 
         # 3 hidden layers with relu activation
         for i in range(self.num_hidden_layers):
             model.add(tf.keras.layers.Dense(self.hidden_units, activation=self.hidden_act_type))
 
         # output layer (To DO - Change this to something better)
-        model.add(tf.keras.layers.Dense(self.output_nodes, activation=self.output_act_type))
+        model.add(tf.keras.layers.Dense(self.output_nodes))
+
         # soft plus max test = .51
         # softmax = .51
         # sigmoid = .51
@@ -66,9 +67,7 @@ class NeuralNetwork(object):
                       loss=self.model_loss,
                       metrics=['accuracy'])
 
-        print(self.x_train, self.y_train)
         model.fit(self.x_train, self.y_train, epochs=self.num_epochs)
-
 
         loss, acc = model.evaluate(self.x_test, self.y_test)
         print('test set loss: {} \ntest set accuracy {}'.format(loss, acc))
