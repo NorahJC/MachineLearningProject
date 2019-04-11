@@ -49,6 +49,8 @@ class NeuralNetwork(object):
         # 3 hidden layers with relu activation
         for i in range(self.num_hidden_layers):
             model.add(tf.keras.layers.Dense(self.hidden_units, activation=self.hidden_act_type))
+            model.add(tf.keras.layers.Dropout(.22
+                                              ))
 
         # output layer (To DO - Change this to something better)
         model.add(tf.keras.layers.Dense(self.output_nodes))
