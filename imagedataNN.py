@@ -1,9 +1,8 @@
 from KerasNNArchitecture import NeuralNetwork
-import pandas as pd, numpy as np, tensorflow as tf, os
+import pandas as pd, numpy as np, tensorflow as tf, os, matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
-test = NeuralNetwork()
-
+emotion_detection_ann = NeuralNetwork()
 
 file_list = os.listdir('C:/Users/Alex/Documents/School/Machine Learning/Project/output_nn/')
 bio_data = pd.read_csv('C:/Users/Alex/Documents/School/Machine Learning/Project/output_nn/{}'.format(file_list[0]))
@@ -33,22 +32,22 @@ for i in range(len(bio_scores)):
         offset = offset + 1
 
 
-# # might not need this
+# does not affect our results
 # scaler = MinMaxScaler(feature_range=(0, 1))
 # X = scaler.fit_transform(X)
 # y = scaler.fit_transform(y)
 
 acc = 0
-test.num_epochs = 45
-test.num_hidden_layers = 20
-test.hidden_units = 35
+emotion_detection_ann.num_epochs = 45
+emotion_detection_ann.num_hidden_layers = 5
+emotion_detection_ann.hidden_units = 35
 trainSize = int(len(X) * .8)
-test.load_data(X, y, trainSize, len(X) - trainSize)
+emotion_detection_ann.load_data(X, y)
 
-test.hidden_act_type= tf.nn.relu
-test.output_nodes = 3
-test.model_optimizer = "rmsprop"        # radam, rmsprop
-test.model_loss = "mean_squared_error"    #mean_absolute_error
+emotion_detection_ann.hidden_act_type= tf.nn.relu
+emotion_detection_ann.output_nodes = 3
+emotion_detection_ann.model_optimizer = "rmsprop"        # radam, rmsprop
+emotion_detection_ann.model_loss = "mean_squared_error"    #mean_absolute_error
 count = 0
 prevAcc = -1
 maxAcc = -1
@@ -56,8 +55,8 @@ bestEpochNum = 0
 
 while acc < .95 and count < 1:     # Not having luck with this method
     prevAcc = acc
-    loss, acc, model = test.evaluate()
-    test.num_hidden_layers = test.num_hidden_layers + 1
+    loss, acc, model, history = emotion_detection_ann.evaluate()
+    emotion_detection_ann.num_hidden_layers = emotion_detection_ann.num_hidden_layers + 1
     predictions = model.predict(X[trainSize:])
     print("Predictions on test set :\n{}".format(predictions))
 
@@ -67,7 +66,7 @@ while acc < .95 and count < 1:     # Not having luck with this method
     print(count)
     if acc > maxAcc:
         maxAcc = acc
-        bestEpochNum = test.num_epochs
+        bestEpochNum = emotion_detection_ann.num_epochs
 print("Best accuracy found to be {} with epochs num of {}".format(maxAcc, bestEpochNum))
 
 # Curiousity of ranges, max, mins
@@ -102,3 +101,28 @@ print("Best accuracy found to be {} with epochs num of {}".format(maxAcc, bestEp
 #
 # print("\nY VALUES:\nmax is {} and min is {}".format(max1, min1))
 # print("range is {} and avg is {}".format(max1 - min1, avg / (3 * len(y))))
+
+
+
+
+# Plot training & validation accuracy values
+# https://keras.io/visualization/   based on visualization logic from here
+fig, ax = plt.subplots(nrows=2, ncols=1)
+print(history.history.keys())
+
+ax[0].plot(history.history['acc'])
+ax[0].plot(history.history['val_acc'])
+ax[0].set_title("Model Accuracy")
+ax[0].set_xlabel("Epochs")
+ax[0].set_ylabel("Accuracy")
+ax[0].legend(['Train', 'Test'], loc='lower left')
+
+# Plot training & validation loss values
+ax[1].plot(history.history['loss'])
+ax[1].plot(history.history['val_loss'])
+ax[1].set_title('Model loss')
+ax[1].set_ylabel('Loss')
+ax[1].set_xlabel('Epoch')
+ax[1].legend(['Train', 'Test'], loc='lower left')
+plt.tight_layout()
+plt.show()

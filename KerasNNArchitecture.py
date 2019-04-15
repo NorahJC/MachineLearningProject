@@ -16,7 +16,7 @@ class NeuralNetwork(object):
     hidden_act_type = ""
     num_epochs = 0
     num_hidden_layers = 0
-    x_train, x_test, y_train, y_test = 0,0,0,0
+    X, y = 0, 0
     model_optimizer, model_loss = ' ', ' '
     output_act_type = ""
     output_nodes = 0
@@ -34,11 +34,9 @@ class NeuralNetwork(object):
         self.output_nodes = output_nodes
         self.model_loss = model_loss
 
-    def load_data(self, X, y, train_size, test_size):
-        self.x_train = X[:train_size]
-        self.x_test = X[train_size:train_size + test_size]
-        self.y_train = y[:train_size]
-        self.y_test = y[train_size:train_size + test_size]
+    def load_data(self, X, y):
+        self.X = X
+        self.y = y
 
     def evaluate(self):
         model = tf.keras.models.Sequential()
@@ -69,8 +67,8 @@ class NeuralNetwork(object):
                       loss=self.model_loss,
                       metrics=['accuracy'])
 
-        model.fit(self.x_train, self.y_train, epochs=self.num_epochs)
+        history = model.fit(self.X, self.y, epochs=self.num_epochs, verbose = 1, validation_split=.2)
 
-        loss, acc = model.evaluate(self.x_test, self.y_test)
+        loss, acc = model.evaluate(self.X, self.y)
         print('test set loss: {} \ntest set accuracy {}'.format(loss, acc))
-        return loss, acc, model
+        return loss, acc, model, history
